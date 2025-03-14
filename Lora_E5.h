@@ -1,11 +1,21 @@
 #include "Arduino.h"
+#include "SoftwareSerial.h"
 
 class Lora_E5 {
     public:
-        LoRa_E5(int rst = -1);
-        bool begin();
+        Lora_E5(SoftwareSerial* ser, int rst = -1);
+        bool begin(unsigned long freq, int sf, bool mode);
+        bool write(byte* data, byte len);
+        bool avail();
+        byte read_byte();
+        int read_int();
+        float read_float();
+        unsigned long read_ulong();
+        int read_block(byte* dest);
     private:
-        int _freq;
+        unsigned long _freq;
         int _sf;
-        int
+        SoftwareSerial* _ser;
+        int _rst;
+
 }
