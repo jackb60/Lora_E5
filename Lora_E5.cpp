@@ -68,7 +68,7 @@ bool Lora_E5::listen() {
     return false;
 }
 
-byte Lora_E5::avail(byte* dest) {
+byte Lora_E5::avail() {
     return _ser.available();
 }
 
@@ -101,7 +101,6 @@ byte Lora_E5::read() {
     }
     _bufLen = dtaStr.length / 2;
 
-    dest = _buf;
     return _bufLen;
     
 }

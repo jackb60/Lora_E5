@@ -8,9 +8,11 @@ class Lora_E5 {
         bool write(byte* data, byte len);
         bool listen();
         byte avail();
-        byte read(byte* dest);
+        byte read();
         int snr();
         int rssi();
+        byte buf[256];
+        byte bufLen;
     private:
         Serial* _ser;
         unsigned long _freq;
@@ -18,6 +20,4 @@ class Lora_E5 {
         int _rst;
         int _rssi;
         int _snr;
-        byte _buf[256];
-        byte _bufLen;
 }
