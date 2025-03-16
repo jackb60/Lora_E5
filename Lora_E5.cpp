@@ -1,30 +1,27 @@
 #include "Arduino.h"
 #include "Lora_E5.h"
 
-Lora_E5::Lora_E5(Serial* ser, int rst = -1) {
+Lora_E5::Lora_E5(Stream* ser, int rst) {
     _ser = ser;
     _rst = rst;
 }
 
 bool Lora_E5::begin(unsigned long freq, int sf) {
-    unsigned long _freq = freq;
-    int _sf = sf
-    _ser.begin(9600);
     pinMode(_rst, OUTPUT);
     digitalWrite(_rst, 0);
     delay(500);
-    _ser.print("AT\n");
+    _ser->print("AT\n");
     delay(200);
-    _ser.print("AT+MODE=TEST\n");
+    _ser->print("AT+MODE=TEST\n");
     delay(200);
-    _ser.print("AT+TEST=RFCFG,");
-    _ser.print(_freq);
-    _ser.print(",SF");
-    _ser.print(_sf);
-    _ser.print(",125,8,8,22,ON,OFF,OFF\n");
-    if(_ser.find("+TEST: RFCFG", 12)) {
-        while(_ser.available()) {
-            _ser.read();
+    _ser->print("AT+TEST=RFCFG,");
+    _ser->print(_freq);
+    _ser->print(",SF");
+    _ser->print(_sf);
+    _ser->print(",125,8,8,22,ON,OFF,OFF\n");
+    if(_ser->find("+TEST: RFCFG", 12)) {
+        while(_ser->available()) {
+            _ser->read();
             delay(1);
         }
         return true;
@@ -40,15 +37,15 @@ bool Lora_E5::reset() {
 }
 
 bool Lora_E5::write(byte* data, byte len) {
-    _ser.print("AT+TEST=TXLRPKT, \"");
+    _ser->print("AT+TEST=TXLRPKT, \"");
     for(byte i = 0; i < len; i++) {
-        _ser.print(*(data + i) < 0x10 ? "0" : "");
-        _ser.print(*(data + i), HEX);
+        _ser->print(*(data + i) < 0x10 ? "0" : "");
+        _ser->print(*(data + i), HEX);
     }
-    _ser.print("\"\n");
-    if(_ser.find("+TEST: TX DONE", 14)) {
-        while(_ser.available()) {
-            _ser.read();
+    _ser->print("\"\n");
+    if(_ser->find("+TEST: TX DONE", 14)) {
+        while(_ser->available()) {
+            _ser->read();
             delay(1);
         }
         return true;
@@ -57,10 +54,10 @@ bool Lora_E5::write(byte* data, byte len) {
 }
 
 bool Lora_E5::listen() {
-    loraSer.write("AT+TEST=RXLRPKT\n");
-    if(_ser.find("+TEST: RX", 9)) {
-        while(_ser.available()) {
-            _ser.read();
+    _ser->write("AT+TEST=RXLRPKT\n");
+    if(_ser->find("+TEST: RX", 9)) {
+        while(_ser->available()) {
+            _ser->read();
             delay(1);
         }
         return true;
@@ -69,7 +66,7 @@ bool Lora_E5::listen() {
 }
 
 byte Lora_E5::avail() {
-    return _ser.available();
+    return _ser->available();
 }
 
 byte Lora_E5::read() {
@@ -80,28 +77,28 @@ byte Lora_E5::read() {
         delay(1);
     }
 
-    _ser.readStringUntil(':'); //+TEST:
-    _ser.readStringUntil(':'); //LEN:
-    String lenStr = _ser.readStringUntil(',');
+    _ser->readStringUntil(':'); //+TEST:
+    _ser->readStringUntil(':'); //LEN:
+    String lenStr = _ser->readStringUntil(',');
     int len = lenStr.toInt();
-    _ser.readStringUntil(':'); //, RSSI:
-    String rssiStr = _ser.readStringUntil(',');
+    _ser->readStringUntil(':'); //, RSSI:
+    String rssiStr = _ser->readStringUntil(',');
     _rssi = rssiStr.toInt();
-    loraSer.readStringUntil(':');
-    String snrStr = _ser.readStringUntil('\n');
+    _ser->readStringUntil(':');
+    String snrStr = _ser->readStringUntil('\n');
     _snr = snrStr.toInt();
-    loraSer.readStringUntil('"'); // +TEST: RX
+    _ser->readStringUntil('"'); // +TEST: RX
     
     
-    String dtaStr = loraSer.readStringUntil('"');
+    String dtaStr = _ser->readStringUntil('"');
     for (int i = 0; i < dtaStr.length(); i++) {
         byte data = dtaStr.charAt(i);
         data = (data < 0x41) ? data - 48 : data - 55;
-        _buf[i / 2] = (i % 2 == 0) ? data : data << 4;
+        buf[i / 2] = (i % 2 == 0) ? data : data << 4;
     }
-    _bufLen = dtaStr.length / 2;
+    bufLen = dtaStr.length() / 2;
 
-    return _bufLen;
+    return bufLen;
     
 }
 
