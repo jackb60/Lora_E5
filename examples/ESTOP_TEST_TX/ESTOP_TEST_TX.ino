@@ -65,4 +65,10 @@ void loop() {
   }
   Serial.println("SEND ULONG SUCCESS");
   delay(1000);
+
+  Serial.print("SNR: ");
+  Serial.println(lora.snr());
+
+  Serial.print("RSSI: ");
+  Serial.println(lora.rssi());
 }
