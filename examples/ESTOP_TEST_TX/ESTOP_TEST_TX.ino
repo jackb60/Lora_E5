@@ -15,7 +15,7 @@ void setup() {
   Serial.begin(115200);
   
   Serial.println("LORA RX TEST");
-  if(!lora.begin(920000000, 10)) { //920 MHZ, SF10
+  if(!lora.begin("920.000", 10)) { //920 MHZ, SF10
     Serial.println("BEGIN FAILED");
     while(1) {delay(1);}
   }
@@ -23,6 +23,7 @@ void setup() {
 
   if(!lora.reset()) {
     Serial.println("RESET FAILED");
+    while(1) {delay(1);}
   }
   Serial.println("RESET SUCCESS");
 
@@ -36,7 +37,7 @@ void loop() {
     Serial.println("SEND BYTE FAILED");
     while(1) {delay(1);}
   }
-  Serial.print("SEND BYTE SUCCESS");
+  Serial.println("SEND BYTE SUCCESS");
   delay(1000);
 
   Serial.println("SENDING INT -3");
@@ -45,7 +46,7 @@ void loop() {
     Serial.println("SEND INT FAILED");
     while(1) {delay(1);}    
   }
-  Serial.print("SEND INT SUCCESS");
+  Serial.println("SEND INT SUCCESS");
   delay(1000);
 
   Serial.println("SENDING FLOAT 1.125");
@@ -65,10 +66,4 @@ void loop() {
   }
   Serial.println("SEND ULONG SUCCESS");
   delay(1000);
-
-  Serial.print("SNR: ");
-  Serial.println(lora.snr());
-
-  Serial.print("RSSI: ");
-  Serial.println(lora.rssi());
 }
