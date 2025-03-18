@@ -13,7 +13,7 @@ void setup() {
   Serial.begin(115200);
   
   Serial.println("LORA RX TEST");
-  if(!lora.begin(920000000, 10)) { //920 MHZ, SF10
+  if(!lora.begin("920.000", 10)) { //920 MHZ, SF10
     Serial.println("BEGIN FAILED");
     while(1) {delay(1);}
   }
@@ -21,6 +21,7 @@ void setup() {
 
   if(!lora.reset()) {
     Serial.println("RESET FAILED");
+    while(1) {delay(1);}
   }
   Serial.println("RESET SUCCESS");
 
@@ -39,6 +40,14 @@ void loop() {
     byte numBytes = lora.read();
     Serial.print(numBytes);
     Serial.println(" BYTES RECIEVED");
+    Serial.print("Interpreted as int: ");
+    Serial.println(*((int*) &lora.buf));
+    Serial.print("Interpreted as float: ");
+    Serial.println(*((float*) &lora.buf));
+    Serial.print("Interpreted as unsigned long: ");
+    Serial.println(*((unsigned long*) &lora.buf));
+    Serial.print("Interprted as byte: ");
+    Serial.println(lora.buf[0]);
     Serial.print("DATA: 0x ");
     for(int i = 0; i < numBytes; i++) {
         Serial.print(lora.buf[i] < 0x10 ? "0" : "");
@@ -46,6 +55,10 @@ void loop() {
         Serial.print(" ");
     }
     Serial.println();
+    Serial.print("SNR: ");
+    Serial.println(lora.snr());
+    Serial.print("RSSI: ");
+    Serial.println(lora.rssi());
   }
 
 }
