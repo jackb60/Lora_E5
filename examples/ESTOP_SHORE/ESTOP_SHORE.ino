@@ -1,4 +1,5 @@
 #include <SoftwareSerial.h>
+#include <Lora_E5.h>
 #define BATT    A2
 #define Y       A3
 #define X       A4
@@ -26,7 +27,7 @@ void writeWithRetry(byte* data, byte len) {
       Serial.println("RESET SUCCESS");
     } else {
       Serial.println("SEND SUCCESS");
-      prev = millis()
+      prev = millis();
     }
 }
 
